@@ -28,7 +28,7 @@ func main() {
 	if *srv == "" {
 		log.Fatal("The server flag is required.")
 	} else {
-		fpmServer = *sock
+		fpmServer = *srv
 	}
 
 	if *url == "" {

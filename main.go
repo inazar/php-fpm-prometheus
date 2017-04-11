@@ -66,12 +66,12 @@ func main() {
 				}
 
 				resp, err := fcgi.Get(env)
-				fcgi.Close()
 				if err != nil {
 					log.Println(err)
 					scrapeFailures = scrapeFailures+1
 					x := strconv.Itoa(scrapeFailures)
 					NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)
+          fcgi.Close()
 					return
 				}
 
@@ -80,6 +80,7 @@ func main() {
 					scrapeFailures = scrapeFailures+1
 					x := strconv.Itoa(scrapeFailures)
 					NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)
+          fcgi.Close()
 					return
 				}
 
@@ -89,10 +90,12 @@ func main() {
 					scrapeFailures = scrapeFailures+1
 					x := strconv.Itoa(scrapeFailures)
 					NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)
+          fcgi.Close()
 					return
 				}
 
 				resp.Body.Close()
+        fcgi.Close()
 
 				x := strconv.Itoa(scrapeFailures)
 

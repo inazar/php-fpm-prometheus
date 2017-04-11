@@ -14,20 +14,21 @@ import (
 var (
 	statusLineRegexp = regexp.MustCompile(`(?m)^(.*):\s+(.*)$`)
 	fpmStatusURL     = ""
-	fpmPort          = ""
+	fpmPort          = 9000
 	listenAddr       = ""
 )
 
 func main() {
-	port  := flag.String("port", 9000, "PHP-FPM server port")
+	port  := flag.String("port", "9000", "PHP-FPM server port")
 	url  := flag.String("status-url", "/status", "PHP-FPM status URL")
 	addr := flag.String("addr", "0.0.0.0:9095", "IP/port for the HTTP server")
 	flag.Parse()
 
-	if *port == "" {
-		fpmPort = 9000
-	} else {
-		fpmPort = *port
+	if *port != "" {
+		fpmPort, err = strconv.Atoi(*port)
+    if err != nil {
+      log.Fatal("Bad value for port")
+    }
 	}
 
 	if *url == "" {

@@ -576,6 +576,14 @@
 			"revision": "84177357ab104029f9237abcb52339a7b80760ef",
 			"branch": "master",
 			"notests": true
+		},
+		{
+			"importpath": "github.com/shesuyo/go-fastcgi-client",
+			"repository": "https://github.com/shesuyo/go-fastcgi-client",
+			"vcs": "git",
+			"revision": "ef54a8d23d70cabe0b28e31fd1f49e695200d8a1",
+			"branch": "master",
+			"notests": true
 		}
 	]
 }

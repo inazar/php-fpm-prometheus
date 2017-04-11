@@ -76,7 +76,7 @@ func main() {
 				}
 
 				if (resp.StatusCode != http.StatusOK){
-					log.Println("php-fpm status code is not OK.")
+					log.Println("php-fpm status code " + resp.StatusCode + " is not OK.")
 					scrapeFailures = scrapeFailures+1
 					x := strconv.Itoa(scrapeFailures)
 					NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)

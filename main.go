@@ -16,12 +16,13 @@ var (
 	statusLineRegexp = regexp.MustCompile(`(?m)^(.*):\s+(.*)$`)
 	fpmStatusURL     = ""
 	fpmSocket        = ""
+  listenAddr       = ""
 )
 
 func main() {
 	sock := flag.String("socket", "", "PHP-FPM socket path")
 	url := flag.String("status-url", "", "PHP-FPM status URL")
-	addr := flag.String("addr", "0.0.0.0:8080", "IP/port for the HTTP server")
+	addr := flag.String("addr", "0.0.0.0:9095", "IP/port for the HTTP server")
 	flag.Parse()
 
 	if *sock == "" {
@@ -36,12 +37,18 @@ func main() {
 		fpmStatusURL = *url
 	}
 
+  if *addr == "" {
+    listenAddr = "0.0.0.0:9095"
+  } else {
+    listenAddr = *addr
+  }
+
 	scrapeFailures := 0
 
 	server := &graceful.Server{
 		Timeout: 10 * time.Second,
 		Server: &http.Server{
-			Addr:        *addr,
+			Addr:        listenAddr,
 			ReadTimeout: time.Duration(5) * time.Second,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

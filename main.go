@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"time"
 	"strconv"
+  "github.com/shesuyo/go-fastcgi-client"
 )
 
 var (
@@ -25,10 +26,7 @@ func main() {
 	flag.Parse()
 
 	if *port != "" {
-		fpmPort, err = strconv.Atoi(*port)
-    if err != nil {
-      log.Fatal("Bad value for port")
-    }
+		fpmPort = strconv.Atoi(*port)
 	}
 
 	if *url == "" {

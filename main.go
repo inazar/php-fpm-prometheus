@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"gopkg.in/tylerb/graceful.v1"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -26,10 +25,11 @@ func main() {
 	flag.Parse()
 
 	if *port != "" {
-		fpmPort, err = strconv.Atoi(*port)
+		p, err := strconv.Atoi(*port)
 		if err != nil {
 			log.Fatal("Bad value for port")
 		}
+    fpmPort = *p
 	}
 
 	if *url == "" {

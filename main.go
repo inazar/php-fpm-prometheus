@@ -15,20 +15,20 @@ import (
 var (
 	statusLineRegexp = regexp.MustCompile(`(?m)^(.*):\s+(.*)$`)
 	fpmStatusURL     = ""
-	fpmSocket        = ""
-  listenAddr       = ""
+	fpmServer        = ""
+	listenAddr       = ""
 )
 
 func main() {
-	sock := flag.String("socket", "", "PHP-FPM socket path")
-	url := flag.String("status-url", "", "PHP-FPM status URL")
+	srv  := flag.String("fpm-server", "", "PHP-FPM server")
+	url  := flag.String("status-url", "", "PHP-FPM status URL")
 	addr := flag.String("addr", "0.0.0.0:9095", "IP/port for the HTTP server")
 	flag.Parse()
 
-	if *sock == "" {
-		log.Fatal("The socket flag is required.")
+	if *srv == "" {
+		log.Fatal("The server flag is required.")
 	} else {
-		fpmSocket = *sock
+		fpmServer = *sock
 	}
 
 	if *url == "" {
@@ -37,11 +37,11 @@ func main() {
 		fpmStatusURL = *url
 	}
 
-  if *addr == "" {
-    listenAddr = "0.0.0.0:9095"
-  } else {
-    listenAddr = *addr
-  }
+	if *addr == "" {
+		listenAddr = "0.0.0.0:9095"
+	} else {
+		listenAddr = *addr
+	}
 
 	scrapeFailures := 0
 
@@ -56,7 +56,7 @@ func main() {
 				env["SCRIPT_NAME"] = fpmStatusURL
 				env["SCRIPT_FILENAME"] = fpmStatusURL
 
-				fcgi, err := fcgiclient.Dial("unix", fpmSocket)
+				fcgi, err := fcgiclient.Dial("tcp", fpmServer)
 				if err != nil {
 					log.Println(err)
 					scrapeFailures = scrapeFailures+1
@@ -66,6 +66,7 @@ func main() {
 				}
 
 				resp, err := fcgi.Get(env)
+				fcgi.Close()
 				if err != nil {
 					log.Println(err)
 					scrapeFailures = scrapeFailures+1

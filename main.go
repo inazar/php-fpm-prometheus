@@ -9,26 +9,25 @@ import (
 	"regexp"
 	"time"
 	"strconv"
-	"github.com/tomasen/fcgi_client"
 )
 
 var (
 	statusLineRegexp = regexp.MustCompile(`(?m)^(.*):\s+(.*)$`)
 	fpmStatusURL     = ""
-	fpmServer        = ""
+	fpmPort          = ""
 	listenAddr       = ""
 )
 
 func main() {
-	srv  := flag.String("fpm-server", "", "PHP-FPM server")
-	url  := flag.String("status-url", "", "PHP-FPM status URL")
+	port  := flag.String("port", 9000, "PHP-FPM server port")
+	url  := flag.String("status-url", "/status", "PHP-FPM status URL")
 	addr := flag.String("addr", "0.0.0.0:9095", "IP/port for the HTTP server")
 	flag.Parse()
 
-	if *srv == "" {
-		log.Fatal("The server flag is required.")
+	if *port == "" {
+		fpmPort = 9000
 	} else {
-		fpmServer = *srv
+		fpmPort = *port
 	}
 
 	if *url == "" {
@@ -52,20 +51,24 @@ func main() {
 			ReadTimeout: time.Duration(5) * time.Second,
 			Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-				env := make(map[string]string)
-				env["SCRIPT_NAME"] = fpmStatusURL
-				env["SCRIPT_FILENAME"] = fpmStatusURL
+        env := make(map[string]string)
+        env["REQUEST_METHOD"] = "GET"
+        env["SCRIPT_FILENAME"] = fpmStatusURL
+        env["SCRIPT_NAME"] = fpmStatusURL
+        env["SERVER_SOFTWARE"] = "go / fcgiclient "
+        env["SERVER_PROTOCOL"] = "HTTP/1.1"
+        env["QUERY_STRING"] = ""
 
-				fcgi, err := fcgiclient.Dial("tcp", fpmServer)
-				if err != nil {
-					log.Println(err)
-					scrapeFailures = scrapeFailures+1
-					x := strconv.Itoa(scrapeFailures)
-					NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)
-					return
-				}
+        fcgi, err := fcgiclient.New("127.0.0.1", fpmPort)
+        if err != nil {
+          log.Println(err)
+          scrapeFailures = scrapeFailures+1
+          x := strconv.Itoa(scrapeFailures)
+          NewMetricsFromMatches([][]string{{"scrape failure:","scrape failure",x}}).WriteTo(w)
+          return
+        }
 
-				resp, err := fcgi.Get(env)
+        resp, err := fcgi.Request(env, "")
 				if err != nil {
 					log.Println(err)
 					scrapeFailures = scrapeFailures+1

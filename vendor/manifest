@@ -576,14 +576,6 @@
 			"revision": "84177357ab104029f9237abcb52339a7b80760ef",
 			"branch": "master",
 			"notests": true
-		},
-		{
-			"importpath": "github.com/tomasen/fcgi_client",
-			"repository": "https://github.com/tomasen/fcgi_client",
-			"vcs": "git",
-			"revision": "b116e704d8674fccc547f9a4d197d6a7bd22ca61",
-			"branch": "master",
-			"notests": true
 		}
 	]
 }

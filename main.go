@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"time"
 	"strconv"
-	"github.com/shesuyo/go-fastcgi-client"
+	"github.com/flashmob/go-fastcgi-client"
 )
 
 var (
@@ -70,8 +70,9 @@ func main() {
 					return
 				}
 
-				resp, err := fcgi.Request(env, "")
+				resp, reterr, err := fcgi.Request(env, "")
 				if err != nil {
+					log.Print(reterr)
 					log.Println(err)
 					scrapeFailures = scrapeFailures+1
 					x := strconv.Itoa(scrapeFailures)
